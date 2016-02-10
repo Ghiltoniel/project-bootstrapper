@@ -1,0 +1,26 @@
+{
+  "name": "angular-boilerplate",
+  "homepage": "https://github.com/Ghiltoniel/angular-grunt-boilerplate",
+  "authors": [
+    "Guillaume Jacquart <guillaume.jacquart@live.fr>"
+  ],
+  "description": "",
+  "main": "",
+  "moduleType": [
+    "es6"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.3.6",
+    "angular-route": "~1.5.0",
+    "angular": "~1.5.0"
+  }
+}
