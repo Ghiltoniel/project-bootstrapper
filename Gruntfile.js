@@ -1,24 +1,5 @@
 module.exports = function(grunt) {
 
-	// This is the default port that livereload listens on;
-	// change it if you configure livereload to use another port.
-	var LIVERELOAD_PORT = 35729;
-	// lrSnippet is just a function.
-	// It's a piece of Connect middleware that injects
-	// a script into the static served html.
-	var lrSnippet = require('connect-livereload')({ port: LIVERELOAD_PORT });
-	// All the middleware necessary to serve static files.
-	var livereloadMiddleware = function (connect, options) {
-	  return [
-		// Inject a livereloading script into static files.
-		lrSnippet,
-		// Serve static files.
-		connect.static(options.base),
-		// Make empty directories browsable.
-		connect.directory(options.base)
-	  ];
-	};
-
     // Project configuration.
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
@@ -28,9 +9,7 @@ module.exports = function(grunt) {
 			},
 			my_target: {
 				files: {
-					'dist/js/controllers.min.js': ['src/js/controllers/**/*.js'],
-					'dist/js/services.min.js': ['src/js/services/**/*.js'],
-					'dist/js/app.min.js': ['src/js/app.js'],
+					'dist/js/app.min.js': ['src/js/app.js', 'src/js/services/**/*.js', 'src/js/controllers/**/*.js'],
 				}
 			}
 		},
@@ -47,17 +26,11 @@ module.exports = function(grunt) {
 			},
 			target: {
 				files: {
-					'dist/css/app.min.css': ['src/css/app/*.css'],
-					'dist/css/third-party.min.css': ['src/css/*.css']
+					'dist/css/app.min.css': ['src/css/*.css']
 				}
 			}
 		},
 		processhtml: {
-			options: {
-				data: {
-					message: 'Hello world!'
-				}
-			},
 			dist: {
 				files: {
 					'dist/index.html': ['src/index.html']
@@ -72,6 +45,22 @@ module.exports = function(grunt) {
 				],
 			},
 		},
+		less: {
+			development: {   
+				options: {
+					paths: ['src/less']
+				},
+				// target name
+				files: [{
+					// no need for files, the config below should work
+					expand: true,
+					cwd:    'src/less',
+					src:    "*.less",
+					dest: 'src/css',
+					ext:    ".css"
+				}]
+			}
+		},
 		connect: {
 			dev: {
 				options: {
@@ -85,7 +74,7 @@ module.exports = function(grunt) {
 					}
 				}
 			},
-			prod: {
+			dist: {
 				options: {
 					port: 8000,
 					base: {
@@ -98,12 +87,22 @@ module.exports = function(grunt) {
 				}
 			}
 		},
+		open : {
+			dev : {
+				path: 'http://localhost:9000',
+				app: 'Chrome'
+			},
+			dist : {
+				path: 'http://localhost:8000',
+				app: 'Chrome'
+			}
+		},
 		watch: {
 			client: {
 				// '**' is used to include all subdirectories
 				// and subdirectories of subdirectories, and so on, recursively.
 				files: ['src/**/*'],
-				tasks:['uglify', 'bower_concat', 'cssmin', 'copy', 'processhtml'],
+				tasks:['less', 'bower_concat', 'cssmin', 'copy', 'processhtml'],
 				options: {
 					livereload: true
 				}
@@ -113,15 +112,18 @@ module.exports = function(grunt) {
 
 	// Load the plugin that provides the "uglify" task.
 	grunt.loadNpmTasks('grunt-contrib-uglify');
+	grunt.loadNpmTasks('grunt-contrib-less');
 	grunt.loadNpmTasks('grunt-bower-concat');
 	grunt.loadNpmTasks('grunt-contrib-cssmin');
 	grunt.loadNpmTasks('grunt-processhtml');
 	grunt.loadNpmTasks('grunt-contrib-copy');
 	grunt.loadNpmTasks('grunt-contrib-connect');
 	grunt.loadNpmTasks('grunt-contrib-watch');
+	grunt.loadNpmTasks('grunt-open');
 
 	// Default task(s).
-	grunt.registerTask('default', ['connect','watch:client']);
-	grunt.registerTask('dist', ['uglify', 'bower_concat', 'cssmin', 'copy', 'processhtml']);
+	grunt.registerTask('default', ['connect:dev', 'open:dev', 'watch:client']);
+	grunt.registerTask('watch-dist', ['connect:dist', 'open:dist', 'watch:client']);
+	grunt.registerTask('dist', ['less', 'uglify', 'bower_concat', 'cssmin', 'copy', 'processhtml']);
 
 };
