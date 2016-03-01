@@ -1,8 +1,9 @@
 # AngularJS Grunt Bootstrap boilerplate
 
 ## Prequisites
-- grunt
-
+- nodejs
+- grunt (npm install -g grunt)
+- bower (npm install -g bower)
 
 ## Install
 git clone https://github.com/Ghiltoniel/angular-grunt-boilerplate
